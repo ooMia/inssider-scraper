@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=80.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inssider-scraper"
+version = "0.0.1"
+description = "SNS Web Scraper"
+requires-python = ">=3.13"
+dependencies = ["bs4", "selenium"]
+readme = "README.md"
+authors = [{ name = "ooMia", email = "hyeonhak.kim.dev@gmail.com" }]
+license = { text = "MIT" }
+keywords = ["scraping", "crawler", "automation"]
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "isort", "flake8"]
+
+[project.scripts]
+inssider = "inssider_scraper.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ooMia/inssider-scraper"
