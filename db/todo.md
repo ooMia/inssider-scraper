@@ -1,5 +1,0 @@
-- [x] mysql db dockerize -> portable hdd
-- [ ]
-- [ ]
-- [ ]
--
