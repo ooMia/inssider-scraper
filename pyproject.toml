@@ -17,7 +17,7 @@ keywords = ["scraping", "crawler", "automation"]
 dev = ["pytest", "black", "isort", "flake8"]
 
 [project.scripts]
-inssider = "inssider_scraper.cli:main"
+inssider = "temp.cli:main"
 
 [project.urls]
 Repository = "https://github.com/ooMia/inssider-scraper"
