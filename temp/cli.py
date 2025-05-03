@@ -1,6 +1,9 @@
 import argparse
+import hashlib
 import os
 from urllib.parse import urlparse
+
+from scrape.youtube import DefaultScraper, YouTube
 
 
 def __url_to_filename(url):
@@ -8,8 +11,8 @@ def __url_to_filename(url):
     # TODO move to utils
     parsed_url = urlparse(url)
     domain = parsed_url.netloc
-    path = parsed_url.path
-    return f"{domain}{path}"
+    key = hashlib.md5(url.encode('utf-8')).hexdigest()
+    return f"{domain}/{key}.html"
 
 
 def __write_to_file(file_path, content):
@@ -33,11 +36,11 @@ def main():
         print(f"스크래핑 시작: {args.url}")
         file_name = __url_to_filename(args.url)
         base = args.base if args.base else os.path.join(os.getcwd(), 'data')
-        output_path = f"{base}/{file_name}.txt"
+        output_path = f"{base}/{file_name}"
 
-        # TODO replace {args.url} with actual scraping logic
-        # TODO store scraped result in DB
-        __write_to_file(output_path, args.url)
+        if not os.path.exists(output_path):
+            data = DefaultScraper().scrape(args.url)
+            __write_to_file(output_path, data)
         print(f"URL이 {output_path}에 저장되었습니다.")
 
     else:

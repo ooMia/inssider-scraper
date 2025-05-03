@@ -7,7 +7,7 @@ name = "inssider-scraper"
 version = "0.0.1"
 description = "SNS Web Scraper"
 requires-python = ">=3.13"
-dependencies = ["bs4", "selenium"]
+dependencies = ["bs4", "selenium-wire", "blinker==1.7.0", "pytubefix"]
 readme = "README.md"
 authors = [{ name = "ooMia", email = "hyeonhak.kim.dev@gmail.com" }]
 license = { text = "MIT" }
@@ -21,3 +21,6 @@ inssider = "temp.cli:main"
 
 [project.urls]
 Repository = "https://github.com/ooMia/inssider-scraper"
+
+[tool.setuptools.packages.find]
+include = ["temp", "scrape"]
