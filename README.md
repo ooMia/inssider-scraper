@@ -4,6 +4,8 @@
 touch README.md
 touch .gitignore
 touch pyproject.toml
+
+docker compose up -d
 ```
 
 # development
