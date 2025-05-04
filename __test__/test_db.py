@@ -1,8 +1,8 @@
 from sqlalchemy import inspect
 from sqlalchemy.orm.scoping import scoped_session
 
+from db.deprecated_model import Address, Dev, User
 from db.handler import DatabaseManager
-from db.model import Address, Dev, User
 
 
 def test_create_table():

@@ -76,19 +76,15 @@ class YouTube(DefaultScraper):
         self.driver.get(url)
         self.driver.implicitly_wait(10)
 
-        title = self.__find_text('#title > h1 > yt-formatted-string')
-        channel = self.__find_text('#text > a')
-        views = self.__find_text('#info > span:nth-child(1)')
+        title = self.__find_text("#title > h1 > yt-formatted-string")
+        channel = self.__find_text("#text > a")
+        views = self.__find_text("#info > span:nth-child(1)")
         likes = self.__find_text(
-            '#top-level-buttons-computed > segmented-like-dislike-button-view-model > yt-smartimation > div > div > like-button-view-model > toggle-button-view-model > button-view-model > button > div.yt-spec-button-shape-next__button-text-content')
+            "#top-level-buttons-computed > segmented-like-dislike-button-view-model > yt-smartimation > div > div > like-button-view-model > toggle-button-view-model > button-view-model > button > div.yt-spec-button-shape-next__button-text-content"
+        )
         self.driver.save_screenshot("screenshot.png")
 
-        return {
-            'title': title,
-            'channel': channel,
-            'views': views,
-            'likes': likes
-        }
+        return {"title": title, "channel": channel, "views": views, "likes": likes}
 
 
 if __name__ == "__main__":
