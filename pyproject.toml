@@ -8,11 +8,10 @@ version = "0.0.1"
 description = "SNS Web Scraper"
 requires-python = ">=3.13"
 dependencies = [
-    "bs4",
     "selenium-wire",
     "blinker==1.7.0",
     "pytubefix",
-    "mysql-connector-python",
+    "SQLAlchemy",
     "python-dotenv",
 ]
 readme = "README.md"
