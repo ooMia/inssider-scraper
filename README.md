@@ -16,4 +16,7 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 inssider --url https://example.com/abc/1
 pytest
+uvicorn temp.serve:app --reload
+# GET http://localhost:8000/docs
+# GET http://localhost:8000/redoc
 ```
