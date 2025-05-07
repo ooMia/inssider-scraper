@@ -3,7 +3,7 @@ import hashlib
 import os
 from urllib.parse import urlparse
 
-from scrape.youtube import DefaultScraper, YouTube
+from scrape.youtube import DefaultCrawler, YouTube
 
 
 def __url_to_filename(url):
@@ -39,7 +39,7 @@ def main():
         output_path = f"{base}/{file_name}"
 
         if not os.path.exists(output_path):
-            data = DefaultScraper().scrape(args.url)
+            data = DefaultCrawler().scrape(args.url)
             __write_to_file(output_path, data)
         print(f"URL이 {output_path}에 저장되었습니다.")
 
