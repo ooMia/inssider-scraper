@@ -13,14 +13,16 @@ dependencies = [
     "pytubefix",
     "SQLAlchemy",
     "python-dotenv",
+    "fastapi",
+    "uvicorn",
 ]
 readme = "README.md"
 authors = [{ name = "ooMia", email = "hyeonhak.kim.dev@gmail.com" }]
-license = { text = "MIT" }
+license-files = ["LICENSE"]
 keywords = ["scraping", "crawler", "automation"]
 
 [project.optional-dependencies]
-dev = ["pytest", "black", "isort", "flake8"]
+dev = ["black", "isort", "flake8"]
 
 [project.scripts]
 inssider = "temp.cli:main"
@@ -29,4 +31,4 @@ inssider = "temp.cli:main"
 Repository = "https://github.com/ooMia/inssider-scraper"
 
 [tool.setuptools.packages.find]
-include = ["temp", "scrape", "db"]
+include = ["model", "controller", "service", "repository"]

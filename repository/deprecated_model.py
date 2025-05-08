@@ -1,13 +1,12 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, relationship
 
-
-class Base(DeclarativeBase):
-    pass
+from repository.model import Base
 
 
 class Address(Base):
     """[experimental] 주소 테이블 모델"""
+
     __tablename__ = "address"
 
     id = Column(Integer, primary_key=True)
@@ -23,6 +22,7 @@ class Address(Base):
 
 class User(Base):
     """[experimental] 사용자 테이블 모델"""
+
     __tablename__ = "user_account"
 
     id = Column(Integer, primary_key=True)
@@ -31,7 +31,8 @@ class User(Base):
 
     # Address와의 일대다 관계 설정
     addresses = relationship(
-        "Address", back_populates="user", cascade="all, delete-orphan")
+        "Address", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
@@ -39,7 +40,8 @@ class User(Base):
 
 class Dev(Base):
     """[experimental]"""
-    __tablename__ = 'dev'
+
+    __tablename__ = "dev"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255))
