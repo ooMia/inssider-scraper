@@ -25,10 +25,10 @@ keywords = ["scraping", "crawler", "automation"]
 dev = ["black", "isort", "flake8"]
 
 [project.scripts]
-inssider = "temp.cli:main"
+inssider = "cli.main:entry_point"
 
 [project.urls]
 Repository = "https://github.com/ooMia/inssider-scraper"
 
 [tool.setuptools.packages.find]
-include = ["model", "controller", "service", "repository"]
+include = ["cli", "model", "controller", "service", "repository"]

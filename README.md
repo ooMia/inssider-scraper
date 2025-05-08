@@ -4,6 +4,7 @@
 touch README.md
 touch .gitignore
 touch pyproject.toml
+pip install -e ".[dev]"
 
 docker compose up -d
 ```
@@ -13,10 +14,9 @@ docker compose up -d
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
-inssider --url https://example.com/abc/1
-python -m unittest discover -f
-uvicorn controller.main:app --reload
-# GET http://localhost:8000/docs
-# GET http://localhost:8000/redoc
+
+inssider install
+inssider test
+inssider serve
+inssider serve --port 8080
 ```
