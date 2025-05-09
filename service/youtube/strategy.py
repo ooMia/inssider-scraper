@@ -62,9 +62,9 @@ class HashTagStrategy(ScrapeStrategy):
         html = driver.find_element(By.TAG_NAME, "html")
 
         while _from < _to:
-            contents = driver.find_elements(
-                By.CSS_SELECTOR, "#contents > ytd-rich-item-renderer"
-            )[_from:]
+            contents = driver.find_elements(By.CSS_SELECTOR, "#contents > ytd-rich-item-renderer")[
+                _from:
+            ]
             html.send_keys(Keys.PAGE_DOWN)
 
             for content in contents:
@@ -81,9 +81,9 @@ class HashTagStrategy(ScrapeStrategy):
 
         video_url = thumbnail.get_attribute("href")
         video_id = video_url.split("/")[-1]
-        thumbnail_url = thumbnail.find_element(
-            By.CSS_SELECTOR, "yt-image > img"
-        ).get_attribute("src")
+        thumbnail_url = thumbnail.find_element(By.CSS_SELECTOR, "yt-image > img").get_attribute(
+            "src"
+        )
         if not thumbnail_url:
             thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/hq2.jpg"
 
@@ -92,9 +92,7 @@ class HashTagStrategy(ScrapeStrategy):
 
         title = meta.find_element(By.ID, "video-title")
         channel = meta.find_element(By.CSS_SELECTOR, "#channel-name #text > a")
-        view_count = meta.find_element(
-            By.CSS_SELECTOR, "#metadata-line > span:nth-child(3)"
-        )
+        view_count = meta.find_element(By.CSS_SELECTOR, "#metadata-line > span:nth-child(3)")
         date = meta.find_element(By.CSS_SELECTOR, "#metadata-line > span:nth-child(4)")
 
         return {

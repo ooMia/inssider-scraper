@@ -52,9 +52,7 @@ class DatabaseManager:
             return
 
         self.db_url = self._db_url
-        self.engine = create_engine(
-            self.db_url, echo=False  # 디버깅을 위해 echo=True로 설정 가능
-        )
+        self.engine = create_engine(self.db_url, echo=False)  # 디버깅을 위해 echo=True로 설정 가능
 
         # 초기화 완료 표시
         self._initialized = True

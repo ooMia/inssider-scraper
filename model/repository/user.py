@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from model.repository import Post
+
 from sqlalchemy import BigInteger, Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,7 +32,7 @@ class UserDetail(Base, TimestampMixin):
     followers_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 목록 공개 여부")
     # fmt: on
 
-    user: Mapped[User] = relationship("User", back_populates="details")
+    user: Mapped["User"] = relationship("User", back_populates="details")
 
 
 class User(Base, TimestampMixin):
@@ -40,7 +45,7 @@ class User(Base, TimestampMixin):
     password_salt: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱용 salt")
     # fmt: on
 
-    details: Mapped[UserDetail] = relationship(
+    details: Mapped["UserDetail"] = relationship(
         "UserDetail",
         back_populates="user",
         cascade="all, delete-orphan",
@@ -48,7 +53,7 @@ class User(Base, TimestampMixin):
         info={"doc": "User와 UserDetail의 1:1 관계"},
     )
 
-    following: Mapped[Follow] = relationship(
+    following: Mapped["Follow"] = relationship(
         "User",
         secondary="follows",
         primaryjoin=id == Follow.from_user_id,

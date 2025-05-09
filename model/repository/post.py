@@ -1,4 +1,7 @@
-from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from model.repository import User
 
 from sqlalchemy import BigInteger, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,12 +15,7 @@ class Post(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(
         BigInteger, primary_key=True, autoincrement=True, doc="게시글 PK"
     )
-    user_id: Mapped[int] = mapped_column(
-        BigInteger,
-        users_id_fk(),
-        index=True,
-        doc="작성자 ID (users 테이블의 PK)",
-    )
+    user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), index=True, doc="작성자 ID")
     title: Mapped[str] = mapped_column(String(255), nullable=False, doc="게시글 제목")
     content: Mapped[str] = mapped_column(Text, nullable=False, doc="게시글 내용")
 

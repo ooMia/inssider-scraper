@@ -26,12 +26,8 @@ class Video(Base, TimestampMixin):
     # 조회수 (nullable=True 자동 설정)
     views: IntOpt = mapped_column(Integer, default=0)
     rating: FloatOpt = mapped_column(Float)  # 평균 평점 (nullable=True 자동 설정)
-    publish_date: DatetimeOpt = mapped_column(
-        DateTime
-    )  # 영상 게시 날짜 (nullable=True 자동 설정)
-    thumbnail_url: StrOpt = mapped_column(
-        String(255)
-    )  # 썸네일 URL (nullable=True 자동 설정)
+    publish_date: DatetimeOpt = mapped_column(DateTime)  # 영상 게시 날짜 (nullable=True 자동 설정)
+    thumbnail_url: StrOpt = mapped_column(String(255))  # 썸네일 URL (nullable=True 자동 설정)
 
     created_at: Datetime = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)
