@@ -1,22 +1,15 @@
-from typing import Optional
-
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String, func
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, relationship
 
-
-def users_id_fk():
-    return ForeignKey("users.id", ondelete="CASCADE")
-
-
-class TimestampMixin:
-    # fmt: off
-    created_at = Column(DateTime, default=func.now(), doc="생성 시간")
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), doc="수정 시간")
-    # fmt: on
+from model.repository import TimestampMixin
 
 
 class Base(DeclarativeBase):
     pass
+
+
+def users_id_fk():
+    return ForeignKey("users.id", ondelete="CASCADE")
 
 
 class Follow(Base, TimestampMixin):

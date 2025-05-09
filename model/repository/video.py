@@ -4,6 +4,8 @@ from typing import Optional
 from sqlalchemy import DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from model.repository import TimestampMixin
+
 Str = Mapped[str]
 StrOpt = Mapped[Optional[str]]
 IntOpt = Mapped[Optional[int]]
@@ -16,7 +18,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class Video(Base):
+class Video(Base, TimestampMixin):
     """유튜브 영상 기본 정보"""
 
     __tablename__ = "videos"
