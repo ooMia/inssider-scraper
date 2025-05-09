@@ -18,6 +18,8 @@ class VideoService:
         response_fields = VideoCreateResponse.model_fields.keys()
         res = {field: getattr(yt, field, None) for field in response_fields}
         res["video_id"] = self.video_id
+        if res["thumbnail_url"] is None:
+            res["thumbnail_url"] = f"https://i.ytimg.com/vi/{self.video_id}/hq2.jpg"
 
         # TODO: res 데이터베이스 저장
         return res
