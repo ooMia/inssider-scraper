@@ -2,9 +2,9 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import DateTime, Float, Integer, String, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 
-from model.repository import TimestampMixin
+from model.repository._base import Base, TimestampMixin
 
 Str = Mapped[str]
 StrOpt = Mapped[Optional[str]]
@@ -12,10 +12,6 @@ IntOpt = Mapped[Optional[int]]
 FloatOpt = Mapped[Optional[float]]
 Datetime = Mapped[datetime]
 DatetimeOpt = Mapped[Optional[datetime]]
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 class Video(Base, TimestampMixin):
