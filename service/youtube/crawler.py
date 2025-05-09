@@ -1,6 +1,10 @@
 import abc
 import os
 from urllib.request import Request
+from warnings import filterwarnings
+
+filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
+filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -31,8 +35,6 @@ class DefaultCrawler(abc.ABC):
             options.binary_location = brave_path
             self.driver = webdriver.Chrome(options=options)
 
-        self.driver.set_page_load_timeout(300)
-        self.driver.set_script_timeout(300)
         self.driver.get("https://httpbin.io/headers")
         self.headers = eval(self.driver.find_element(By.TAG_NAME, "body").text)
         self.driver.request_interceptor = self.request_interceptor
@@ -66,5 +68,5 @@ class YouTubeCrawler(DefaultCrawler):
 
     def scrape(self, url: str, strategy: ScrapeStrategy, limit: int = 10) -> dict:
         self.driver.get(url)
-        self.driver.implicitly_wait(10)
+        # self.driver.implicitly_wait(10)
         return strategy.run(self.driver, limit)

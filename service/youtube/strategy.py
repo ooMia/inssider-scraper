@@ -1,20 +1,24 @@
 import abc
 from typing import override
+from warnings import filterwarnings
 
+filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
+filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
+
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from seleniumwire import webdriver
 
 
 class ScrapeStrategy(abc.ABC):
     """스크래핑 전략을 정의하는 추상 클래스입니다."""
 
     @classmethod
-    def run(cls, driver: webdriver.Chrome, len_items: int) -> dict:
+    def run(cls, driver: Chrome, len_items: int) -> dict:
         """스크래핑 전략을 실행합니다."""
         res, idx, limit = [], 0, 400  # YouTube provides max 450 contents
         try:
-            while len(res) < len_items and idx < limit:
+            while idx < limit and len(res) < len_items:
                 found = cls._run(driver, idx)
                 idx += len(found)
                 filtered = list(filter(cls._filter, found))
@@ -26,7 +30,7 @@ class ScrapeStrategy(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _run(cls, driver: webdriver.Chrome, idx: int) -> list[dict]:
+    def _run(cls, driver: Chrome, idx: int) -> list[dict]:
         """해시태그 검색 결과를 스크래핑합니다."""
         raise NotImplementedError()
 
@@ -48,7 +52,7 @@ class HashTagStrategy(ScrapeStrategy):
 
     @classmethod
     @override
-    def _run(cls, driver: webdriver.Chrome, idx: int) -> list[dict]:
+    def _run(cls, driver: Chrome, idx: int) -> list[dict]:
         from selenium.webdriver.common.action_chains import ActionChains
         from selenium.webdriver.common.keys import Keys
 
@@ -80,6 +84,8 @@ class HashTagStrategy(ScrapeStrategy):
         thumbnail_url = thumbnail.find_element(
             By.CSS_SELECTOR, "yt-image > img"
         ).get_attribute("src")
+        if not thumbnail_url:
+            thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/hq2.jpg"
 
         details = content.find_element(By.ID, "details")
         meta = details.find_element(By.ID, "meta")
@@ -135,4 +141,3 @@ class HashTagStrategy(ScrapeStrategy):
         except ValueError:
             # 변환할 수 없는 경우에는 0을 반환합니다.
             return 0
-

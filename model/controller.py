@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class VideoCreateRequest(BaseModel):
     video_id: str = Field(
         description="유튜브 비디오 ID",
-        example="MLpmiywRNzY",
+        json_schema_extra={"example": "MLpmiywRNzY"},
     )
 
 
@@ -29,11 +29,11 @@ class VideoCreateResponse(BaseModel):
 class HashTagCrawlRequest(BaseModel):
     hashtag: str = Field(
         description="검색 해시태그",
-        example="밈",
+        json_schema_extra={"example": "밈"},
     )
     limit: Optional[int] = Field(
         description="검색 결과 개수",
-        example=10,
+        json_schema_extra={"example": 10},
     )
 
 
