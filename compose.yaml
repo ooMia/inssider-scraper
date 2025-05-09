@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:${DOCKER_MYSQL_VERSION:-latest}
+    container_name: ${DOCKER_MYSQL_CONTAINER_NAME:-mysql_dev}
+    restart: 'on-failure:1'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+      - "${MYSQL_XPORT:-33060}:33060"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-dev}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-user}
