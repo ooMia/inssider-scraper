@@ -1,7 +1,6 @@
 import unittest
 
 from sqlalchemy import inspect
-from sqlalchemy.orm.scoping import scoped_session
 
 from model.repository import User, UserDetail
 from repository.handler import DatabaseManager
@@ -17,14 +16,10 @@ class TestDatabase(unittest.TestCase):
         """URL 기반 싱글톤 패턴이 올바르게 작동하는지 테스트합니다."""
         db1 = DatabaseManager()
         db2 = DatabaseManager()
-        self.assertIs(
-            db1, db2, "Same connection parameters should return the same instance"
-        )
+        self.assertIs(db1, db2, "Same connection parameters should return the same instance")
 
         db3 = DatabaseManager(database="meme")
-        self.assertIsNot(
-            db1, db3, "Different database names should return different instances"
-        )
+        self.assertIsNot(db1, db3, "Different database names should return different instances")
 
         db4 = DatabaseManager(host="localhost")
         db5 = DatabaseManager(host="127.0.0.1")
@@ -45,50 +40,28 @@ class TestDatabase(unittest.TestCase):
         self.assertIn("posts", table_names)
         self.assertIn("videos", table_names)
 
-    def test_insert_and_read(self):
-        """레코드 삽입과 읽기가 정상적으로 작동하는지 테스트합니다."""
-
-        def count_records(session: scoped_session):
-            return session.query(User).filter_by(email="test").count()
-
-        with self.db_manager as session:
-            initial_count = count_records(session)
-            initial_user = User(email="test", password="a", password_salt="a")
-            initial_user.details = UserDetail(username="닉네임")
-            session.add(initial_user)
-
-        with self.db_manager as session:
-            new_count = count_records(session)
-            self.assertEqual(
-                new_count, initial_count + 1, "Record count should increase by 1"
-            )
-
-    def test_relationships(self):
-        """관계 설정이 올바르게 되었는지 테스트합니다."""
+    def test_user_insert_and_relationship(self):
+        """User와 UserDetail의 삽입 및 관계 테스트"""
 
         with self.db_manager as session:
             user = User(
-                email="a@a.com",
-                password="hashed",
-                password_salt="salt",
+                email="test",
+                password="a",
+                password_salt="a",
                 details=UserDetail(username="닉네임"),
             )
-            self.assertEqual(user, user.details.user, "back_populates should work")
             session.add(user)
+            session.commit()
 
-        # 새 세션에서 관계 확인
-        # with self.db_manager as session:
-        #     loaded_user = session.query(User).filter_by(name="test_user").first()
-        #     self.assertIsNotNone(loaded_user, "User should be saved")
-        #     self.assertEqual(
-        #         len(loaded_user.addresses), 2, "User should have 2 addresses"
-        #     )
+        with self.db_manager as session:
+            query_user = session.query(User).filter_by(email="test").first()
+            query_detail = session.query(UserDetail).filter_by(username="닉네임").first()
 
-        #     # 관계의 양방향 확인
-        #     for address in loaded_user.addresses:
-        #         self.assertIs(
-        #             address.user, loaded_user, "Address should reference back to user"
-        #         )
+            self.assertIsNotNone(query_user)
+            self.assertIsNotNone(query_detail)
+
+            self.assertEqual(query_detail.user, query_user.details.user)
+            self.assertEqual(query_user.details, query_detail.user.details)
 
 
 if __name__ == "__main__":
