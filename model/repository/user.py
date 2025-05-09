@@ -1,4 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from typing import Optional
+
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -6,47 +8,32 @@ class Base(DeclarativeBase):
     pass
 
 
-class Address(Base):
-    """[experimental] 주소 테이블 모델"""
-
-    __tablename__ = "address"
-
-    id = Column(Integer, primary_key=True)
-    email_address = Column(String(255), nullable=False)
-    user_id = Column(Integer, ForeignKey("user_account.id"))
-
-    # User와의 관계 설정 (다대일)
-    user = relationship("User", back_populates="addresses")
-
-    def __repr__(self) -> str:
-        return f"Address(id={self.id!r}, email_address={self.email_address!r})"
-
-
 class User(Base):
-    """[experimental] 사용자 테이블 모델"""
+    __tablename__ = "users"
 
-    __tablename__ = "user_account"
+    # fmt: off
+    id       = Column(BigInteger, primary_key=True, autoincrement=True)
+    email    = Column(String(255), immutable=True, unique=True)
+    password = Column(String(255))  # 해싱된 비밀번호
+    salt     = Column(String(255))  # 비밀번호 해싱용 salt
+    # fmt: on
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), nullable=False)
-    fullname = Column(String(100))
-
-    # Address와의 일대다 관계 설정
-    addresses = relationship(
-        "Address", back_populates="user", cascade="all, delete-orphan"
+    details = relationship(
+        "UserDetail", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
 
-    def __repr__(self) -> str:
-        return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
 
+class UserDetail(Base):
+    __tablename__ = "user_details"
 
-class Dev(Base):
-    """[experimental]"""
+    # fmt: off
+    user_id      = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    username     = Column(Optional(String(255)))  # 사용자 이름
+    introduction = Column(Optional(String(255)))  # 자기소개
+    profile_url  = Column(Optional(String(255)))  # 프로필 사진 URL
 
-    __tablename__ = "dev"
+    account_visibility   = Column(Boolean, default=True)  # 프로필 공개 여부
+    followers_visibility = Column(Boolean, default=True)  # 팔로워 목록 공개 여부
+    # fmt: on
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255))
-
-    def __repr__(self):
-        return f"<Dev(id={self.id}, name='{self.name}')>"
+    user = relationship("User", back_populates="details")
