@@ -2,7 +2,8 @@ from dotenv import dotenv_values, load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from repository.model import Base
+from model.repository.video import Base as VideoBase
+from model.repository.user import Base as UserBase
 
 # .env 파일 로드
 load_dotenv()
@@ -61,11 +62,11 @@ class DatabaseManager:
 
     def create_tables(self):
         """모든 모델의 테이블을 생성합니다."""
-        Base.metadata.create_all(self.engine)
+        VideoBase.metadata.create_all(self.engine)
 
     def drop_tables(self):
         """모든 모델의 테이블을 삭제합니다."""
-        Base.metadata.drop_all(self.engine)
+        VideoBase.metadata.drop_all(self.engine)
 
     def __enter__(self):
         """컨텍스트 매니저 진입 시 호출됩니다."""
@@ -82,3 +83,22 @@ class DatabaseManager:
             # 예외가 없으면 커밋
             self.session.commit()
         self.session.close()
+
+
+if __name__ == "__main__":
+
+    def print_ddl():
+        from sqlalchemy import create_engine
+        from sqlalchemy.schema import CreateTable
+
+        engine = create_engine("sqlite:///:memory:")
+
+        for table in VideoBase.metadata.sorted_tables:
+            ddl = str(CreateTable(table).compile(engine))
+            print(f"{ddl};")
+
+        for table in UserBase.metadata.sorted_tables:
+            ddl = str(CreateTable(table).compile(engine))
+            print(f"{ddl};")
+
+    print_ddl()

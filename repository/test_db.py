@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy import inspect
 from sqlalchemy.orm.scoping import scoped_session
 
-from repository.deprecated_model import Address, Dev, User
+from model.repository.user import Address, Dev, User
 from repository.handler import DatabaseManager
 
 

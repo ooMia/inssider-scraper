@@ -4,7 +4,6 @@ from typing import Optional
 from sqlalchemy import DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-# 타입 별칭 정의
 Str = Mapped[str]
 StrOpt = Mapped[Optional[str]]
 IntOpt = Mapped[Optional[int]]

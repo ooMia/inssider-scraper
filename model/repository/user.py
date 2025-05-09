@@ -1,7 +1,9 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, relationship
 
-from repository.model import Base
+
+class Base(DeclarativeBase):
+    pass
 
 
 class Address(Base):
