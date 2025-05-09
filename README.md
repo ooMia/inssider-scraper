@@ -15,8 +15,8 @@ docker compose up -d
 python3 -m venv .venv
 source .venv/bin/activate
 
-inssider install
-inssider test
-inssider serve
-inssider serve --port 8080
+inssider -h
+inssider install -h
+inssider test -h
+inssider serve -h
 ```
