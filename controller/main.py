@@ -42,7 +42,7 @@ from model.controller import HashTagCrawlRequest, HashTagCrawlResponse
 
 
 @app.post("/api/v1/crawl/hashtag")
-async def crawl_hashtag(req: HashTagCrawlRequest):
+async def crawl_hashtag(req: HashTagCrawlRequest) -> HashTagCrawlResponse:
     from service.hashtag_service import HashTagService
 
     service = HashTagService()
