@@ -3,14 +3,15 @@ import os
 from urllib.request import Request
 from warnings import filterwarnings
 
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+from service.youtube.strategy import ScrapeStrategy
+
 filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
 filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
 
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from seleniumwire import webdriver
-
-from service.youtube.strategy import ScrapeStrategy
+from seleniumwire import webdriver  # noqa: E402
 
 
 class DefaultCrawler(abc.ABC):

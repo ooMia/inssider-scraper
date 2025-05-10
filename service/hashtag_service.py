@@ -12,6 +12,6 @@ class HashTagService:
             url = f"https://www.youtube.com/hashtag/{quote(req.hashtag)}"
             data = crawler.scrape(url, HashTagStrategy(), req.limit)
 
-            # TODO db 저장
+            # [ ] TODO db 저장
 
             return data

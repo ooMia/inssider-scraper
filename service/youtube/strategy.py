@@ -1,9 +1,5 @@
 import abc
 from typing import override
-from warnings import filterwarnings
-
-filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
-filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
 
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
