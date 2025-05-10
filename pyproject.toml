@@ -22,7 +22,7 @@ license-files = ["LICENSE"]
 keywords = ["scraping", "crawler", "automation"]
 
 [project.optional-dependencies]
-dev = ["black", "isort", "flake8"]
+dev = ["black", "isort", "autoflake", "flake8"]
 
 [project.scripts]
 inssider = "cli.main:entry_point"
@@ -35,3 +35,8 @@ include = ["cli", "model", "controller", "service", "repository"]
 
 [tool.black]
 line-length = 100
+
+[tool.autoflake]
+remove-all-unused-imports = true
+in-place = true
+recursive = true

@@ -1,6 +1,6 @@
 import argparse
 
-from cli.commands import install, serve, test
+from cli.commands import _install, _serve, _test, _format
 
 
 def entry_point():
@@ -11,19 +11,22 @@ def entry_point():
     subparsers = parser.add_subparsers(dest="command", help="실행할 명령")
 
     # 각 명령어 모듈에서 파서 설정
-    install.setup_parser(subparsers)
-    test.setup_parser(subparsers)
-    serve.setup_parser(subparsers)
+    _install.setup_parser(subparsers)
+    _test.setup_parser(subparsers)
+    _serve.setup_parser(subparsers)
+    _format.setup_parser(subparsers)
 
     args = parser.parse_args()
 
     match args.command:
         case "install":
-            install.handle_command(args)
+            _install.handle_command(args)
         case "test":
-            test.handle_command(args)
+            _test.handle_command(args)
         case "serve":
-            serve.handle_command(args)
+            _serve.handle_command(args)
+        case "format":
+            _format.handle_command(args)
         case _:
             parser.print_help()
             exit(1)
