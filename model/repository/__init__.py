@@ -21,6 +21,6 @@ Conventions
         ```
 """
 
-from .post import Post  # type: ignore
-from .user import Follow, User, UserDetail  # type: ignore
-from .video import Video  # type: ignore
+from .post import Post  # noqa: F401
+from .user import Follow, User, UserDetail  # noqa: F401
+from .video import Video  # noqa: F401

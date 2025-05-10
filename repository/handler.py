@@ -1,12 +1,12 @@
 from dotenv import dotenv_values, load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import scoped_session, sessionmaker
+
+from model.repository._base import Base
 
 # .env 파일 로드
 load_dotenv()
 envs = dotenv_values()
-
-from model.repository._base import Base
 
 
 class DatabaseManager:
@@ -36,7 +36,7 @@ class DatabaseManager:
         # 인스턴스가 없으면 새로 생성
         if instance is None:
             instance = super(DatabaseManager, cls).__new__(cls)
-            instance._db_url = db_url
+            instance.db_url = db_url
             instance._initialized = False
             cls._instances[db_url] = instance
 
@@ -51,19 +51,23 @@ class DatabaseManager:
         if getattr(self, "_initialized", False):
             return
 
-        self.db_url = self._db_url
-        self.engine = create_engine(self.db_url, echo=False)  # 디버깅을 위해 echo=True로 설정 가능
+        self.db_url = getattr(self, "db_url")
+        self.engine = create_engine(self.db_url, echo=False)
 
         # 초기화 완료 표시
         self._initialized = True
 
     def create_tables(self):
         """모든 모델의 테이블을 생성합니다."""
-        Base.metadata.create_all(self.engine)
+        with self.engine.connect() as conn:
+            Base.metadata.create_all(conn)
 
     def drop_tables(self):
-        """모든 모델의 테이블을 삭제합니다."""
-        Base.metadata.drop_all(self.engine)
+        """외래키 제약조건을 임시로 해제하고, 모든 테이블을 삭제합니다."""
+        with self.engine.connect() as conn:
+            conn.execute(text("SET FOREIGN_KEY_CHECKS=0"))
+            Base.metadata.drop_all(conn)
+            conn.execute(text("SET FOREIGN_KEY_CHECKS=1"))
 
     def __enter__(self):
         """컨텍스트 매니저 진입 시 호출됩니다."""

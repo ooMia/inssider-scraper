@@ -13,3 +13,7 @@ class TimestampMixin:
 
 def users_id_fk():
     return ForeignKey("users.id", ondelete="CASCADE")
+
+
+def posts_id_fk():
+    return ForeignKey("posts.id")

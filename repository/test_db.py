@@ -60,6 +60,9 @@ class TestDatabase(unittest.TestCase):
             self.assertIsNotNone(query_user)
             self.assertIsNotNone(query_detail)
 
+            if query_user is None or query_detail is None:
+                self.fail("Neither user nor detail should be None")
+
             self.assertEqual(query_detail.user, query_user.details.user)
             self.assertEqual(query_user.details, query_detail.user.details)
 
