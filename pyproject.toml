@@ -36,7 +36,13 @@ include = ["cli", "model", "controller", "service", "repository"]
 [tool.black]
 line-length = 100
 
+[tool.isort]
+profile = "black"
+line_length = 100
+skip = [".venv"]
+
 [tool.autoflake]
 remove-all-unused-imports = true
 in-place = true
 recursive = true
+exclude = [".venv"]

@@ -15,11 +15,11 @@ docker compose up -d
 python3 -m venv .venv
 source .venv/bin/activate
 
-black .
 inssider -h
-inssider install -h
-inssider test -h
-inssider serve -h
+inssider install
+inssider format
+inssider test
+inssider serve
 ```
 
 # ToDo
