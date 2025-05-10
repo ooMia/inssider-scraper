@@ -26,17 +26,13 @@ class UserDetail(Base, TimestampMixin):
     __tablename__ = "user_details"
 
     user_id: Mapped[int] = mapped_column(
-        BigInteger, users_id_fk(), primary_key=True, doc="users 테이블의 PK"
+        BigInteger, users_id_fk(), primary_key=True, doc="users 테이블 PK"
     )
     username: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="사용자 이름")
     introduction: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="자기소개")
-    profile_url: Mapped[str | None] = mapped_column(
-        String(255), nullable=True, doc="프로필 사진 URL"
-    )
+    profile_url: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="프로필 URL")
     account_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="프로필 공개 여부")
-    followers_visibility: Mapped[bool] = mapped_column(
-        Boolean, default=True, doc="팔로워 목록 공개 여부"
-    )
+    follower_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 공개 여부")
 
     user: Mapped["User"] = relationship("User", back_populates="details")
 
@@ -57,16 +53,16 @@ class User(Base, TimestampMixin):
         info={"doc": "User와 UserDetail의 1:1 관계"},
     )
 
-    following: Mapped["Follow"] = relationship(
+    following: Mapped[list["Follow"]] = relationship(
         "User",
         secondary="follows",
         primaryjoin=id == Follow.from_user_id,
         secondaryjoin=id == Follow.to_user_id,
         backref="followers",
-        info={"doc": "User 간의 팔로우를 나타내는 M:N 관계"},
+        info={"doc": "User가 팔로우하는 User 목록"},
     )
 
-    posts: Mapped["Post"] = relationship(
+    posts: Mapped[list["Post"]] = relationship(
         "Post",
         back_populates="user",
         cascade="all, delete-orphan",
