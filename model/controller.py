@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -31,9 +30,9 @@ class HashTagCrawlRequest(BaseModel):
         description="검색 해시태그",
         json_schema_extra={"example": "밈"},
     )
-    limit: Optional[int] = Field(
+    limit: int = Field(
         description="검색 결과 개수",
-        json_schema_extra={"example": 10},
+        default=10,
     )
 
 

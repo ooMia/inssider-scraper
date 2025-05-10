@@ -7,11 +7,9 @@ class Base(DeclarativeBase):
 
 
 class TimestampMixin:
-    # fmt: off
     created_at = Column(DateTime, default=func.now(), doc="생성 시간")
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), doc="수정 시간")
 
 
 def users_id_fk():
     return ForeignKey("users.id", ondelete="CASCADE")
-    # fmt: on

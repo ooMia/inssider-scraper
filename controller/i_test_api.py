@@ -1,6 +1,6 @@
 import asyncio
 import unittest
-from warnings import filterwarnings
+from typing import cast
 
 
 class AsyncTestCase(unittest.TestCase):
@@ -15,12 +15,14 @@ class AsyncTestCase(unittest.TestCase):
         asyncio.set_event_loop(self._asyncio_loop)
 
     def tearDown(self):
-        self._asyncio_loop.close()
+        if self._asyncio_loop:
+            self._asyncio_loop.close()
         asyncio.set_event_loop(None)
 
     def run_async(self, coroutine):
         """비동기 코루틴을 실행하는 헬퍼 메서드"""
-        return self._asyncio_loop.run_until_complete(coroutine)
+        if self._asyncio_loop:
+            return self._asyncio_loop.run_until_complete(coroutine)
 
 
 class IntegrationTestAPI(AsyncTestCase):
@@ -36,13 +38,14 @@ class IntegrationTestAPI(AsyncTestCase):
             res: VideoCreateResponse = await create_video(req)
             self.assertEqual(req.video_id, res.video_id)
             self.assertEqual(res.title, "치킨 원탑 소스")
+
             self.assertIn(
                 f"https://i.ytimg.com/vi/{req.video_id}/",
-                res.thumbnail_url,
+                cast(str, res.thumbnail_url),
             )
-            self.assertGreaterEqual(
-                res.views, 5_030_000 * 0.9
-            )  # Google YouTube API의 결과는 실제 웹 페이지에 출력되는 조회수 대비 -10%의 오차가 발생함
+
+            # Google YouTube API의 결과는 실제 웹 페이지에 출력되는 조회수 대비 -10%의 오차가 발생함
+            self.assertGreaterEqual(cast(int, res.views), 5_030_000 * 0.9)
 
         try:
             self.run_async(test_coro())

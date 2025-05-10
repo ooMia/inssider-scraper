@@ -21,6 +21,6 @@ Conventions
         ```
 """
 
-from .post import Post
-from .user import Follow, User, UserDetail
-from .video import Video
+from .post import Post  # type: ignore
+from .user import Follow, User, UserDetail  # type: ignore
+from .video import Video  # type: ignore

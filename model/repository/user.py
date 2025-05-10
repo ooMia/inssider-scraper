@@ -14,23 +14,29 @@ from model.repository._base import Base, TimestampMixin, users_id_fk
 class Follow(Base, TimestampMixin):
     __tablename__ = "follows"
 
-    # fmt: off
-    from_user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), primary_key=True, doc="팔로우를 요청한 사용자 ID")
-    to_user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), primary_key=True, doc="팔로우 요청 대상의 사용자 ID")
-    # fmt: on
+    from_user_id: Mapped[int] = mapped_column(
+        BigInteger, users_id_fk(), primary_key=True, doc="팔로우를 요청한 사용자 ID"
+    )
+    to_user_id: Mapped[int] = mapped_column(
+        BigInteger, users_id_fk(), primary_key=True, doc="팔로우 요청 대상의 사용자 ID"
+    )
 
 
 class UserDetail(Base, TimestampMixin):
     __tablename__ = "user_details"
 
-    # fmt: off
-    user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), primary_key=True, doc="users 테이블의 PK")
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, users_id_fk(), primary_key=True, doc="users 테이블의 PK"
+    )
     username: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="사용자 이름")
     introduction: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="자기소개")
-    profile_url: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="프로필 사진 URL")
+    profile_url: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, doc="프로필 사진 URL"
+    )
     account_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="프로필 공개 여부")
-    followers_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 목록 공개 여부")
-    # fmt: on
+    followers_visibility: Mapped[bool] = mapped_column(
+        Boolean, default=True, doc="팔로워 목록 공개 여부"
+    )
 
     user: Mapped["User"] = relationship("User", back_populates="details")
 
@@ -38,12 +44,10 @@ class UserDetail(Base, TimestampMixin):
 class User(Base, TimestampMixin):
     __tablename__ = "users"
 
-    # fmt: off
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, doc="이메일 주소")
     password: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱값")
     password_salt: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱용 salt")
-    # fmt: on
 
     details: Mapped["UserDetail"] = relationship(
         "UserDetail",
