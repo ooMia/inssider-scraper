@@ -4,12 +4,12 @@ if TYPE_CHECKING:
     from model.repository import User
 
 from sqlalchemy import BigInteger, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from model.repository._base import Base, TimestampMixin
 
 
-class Post(Base, TimestampMixin):
+class Post(MappedAsDataclass, Base, TimestampMixin):
     __tablename__ = "posts"
 
     id: Mapped[int] = mapped_column(
@@ -35,7 +35,7 @@ class Post(Base, TimestampMixin):
     )
 
 
-class PostTag(Base):
+class PostTag(MappedAsDataclass, Base):
     __tablename__ = "post_tags"
 
     post_id: Mapped[int] = mapped_column(
@@ -46,7 +46,7 @@ class PostTag(Base):
     )
 
 
-class Tag(Base, TimestampMixin):
+class Tag(MappedAsDataclass, Base, TimestampMixin):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, doc="태그 PK")

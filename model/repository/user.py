@@ -6,12 +6,12 @@ if TYPE_CHECKING:
     from model.repository import Post
 
 from sqlalchemy import BigInteger, Boolean, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from model.repository._base import Base, TimestampMixin, users_id_fk
 
 
-class Follow(Base, TimestampMixin):
+class Follow(MappedAsDataclass, Base, TimestampMixin):
     __tablename__ = "follows"
 
     from_user_id: Mapped[int] = mapped_column(
@@ -22,7 +22,7 @@ class Follow(Base, TimestampMixin):
     )
 
 
-class UserDetail(Base, TimestampMixin):
+class UserDetail(MappedAsDataclass, Base, TimestampMixin):
     __tablename__ = "user_details"
 
     user_id: Mapped[int] = mapped_column(
@@ -31,22 +31,29 @@ class UserDetail(Base, TimestampMixin):
     username: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="사용자 이름")
     introduction: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="자기소개")
     profile_url: Mapped[str | None] = mapped_column(String(255), nullable=True, doc="프로필 URL")
+    
+    user: Mapped["User"] = relationship("User", back_populates="details")
+
     account_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="프로필 공개 여부")
     follower_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 공개 여부")
 
-    user: Mapped["User"] = relationship("User", back_populates="details")
 
-
-class User(Base, TimestampMixin):
+class User(MappedAsDataclass, Base, TimestampMixin):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(
+        BigInteger,
+        init=False,
+        primary_key=True,
+        autoincrement=True,
+    )
     email: Mapped[str] = mapped_column(String(255), unique=True, doc="이메일 주소")
     password: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱값")
     password_salt: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱용 salt")
 
     details: Mapped["UserDetail"] = relationship(
         "UserDetail",
+        init=False,
         back_populates="user",
         cascade="all, delete-orphan",
         uselist=False,
@@ -55,6 +62,7 @@ class User(Base, TimestampMixin):
 
     following: Mapped[list["Follow"]] = relationship(
         "User",
+        init=False,
         secondary="follows",
         primaryjoin=id == Follow.from_user_id,
         secondaryjoin=id == Follow.to_user_id,
@@ -64,6 +72,7 @@ class User(Base, TimestampMixin):
 
     posts: Mapped[list["Post"]] = relationship(
         "Post",
+        init=False,
         back_populates="user",
         cascade="all, delete-orphan",
         info={"doc": "User와 Post 간의 1:N 관계"},
