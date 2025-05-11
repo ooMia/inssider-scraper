@@ -38,14 +38,6 @@ class DatabaseManager:
             self._engines[self.db_url] = create_engine(self.db_url, echo=False)
         self.engine: Engine = self._engines[self.db_url]
 
-    def create_tables(self):
-        """모든 모델의 테이블을 생성합니다."""
-        Base.metadata.create_all(self.engine)
-
-    def drop_tables(self):
-        """모든 테이블을 삭제합니다."""
-        Base.metadata.drop_all(self.engine)
-
     def __enter__(self):
         """컨텍스트 매니저 진입 시 호출됩니다."""
         self.session = scoped_session(sessionmaker(bind=self.engine))
@@ -59,6 +51,14 @@ class DatabaseManager:
         else:
             self.session.commit()
         self.session.close()
+
+    def create_tables(self):
+        """모든 모델의 테이블을 생성합니다."""
+        Base.metadata.create_all(self.engine)
+
+    def drop_tables(self):
+        """모든 테이블을 삭제합니다."""
+        Base.metadata.drop_all(self.engine)
 
 
 if __name__ == "__main__":
