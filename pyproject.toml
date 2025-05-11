@@ -8,6 +8,7 @@ version = "0.0.1"
 description = "SNS Web Scraper"
 requires-python = ">=3.13"
 dependencies = [
+    "setuptools",
     "selenium-wire",
     "blinker==1.7.0",
     "pytubefix",
@@ -15,6 +16,7 @@ dependencies = [
     "python-dotenv",
     "fastapi",
     "uvicorn",
+    "psycopg[binary]",
 ]
 readme = "README.md"
 authors = [{ name = "ooMia", email = "hyeonhak.kim.dev@gmail.com" }]
@@ -22,7 +24,7 @@ license-files = ["LICENSE"]
 keywords = ["scraping", "crawler", "automation"]
 
 [project.optional-dependencies]
-dev = ["black", "isort", "autoflake", "flake8"]
+dev = ["pytest", "pytest-asyncio", "black", "isort", "autoflake", "flake8"]
 
 [project.scripts]
 inssider = "cli.main:entry_point"
@@ -46,3 +48,7 @@ remove-all-unused-imports = true
 in-place = true
 recursive = true
 exclude = [".venv"]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]

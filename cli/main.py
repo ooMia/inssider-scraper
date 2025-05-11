@@ -30,7 +30,3 @@ def entry_point():
         case _:
             parser.print_help()
             exit(1)
-
-
-if __name__ == "__main__":
-    entry_point()
