@@ -1,9 +1,5 @@
 import abc
 from typing import override
-from warnings import filterwarnings
-
-filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
-filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
 
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
@@ -62,9 +58,9 @@ class HashTagStrategy(ScrapeStrategy):
         html = driver.find_element(By.TAG_NAME, "html")
 
         while _from < _to:
-            contents = driver.find_elements(
-                By.CSS_SELECTOR, "#contents > ytd-rich-item-renderer"
-            )[_from:]
+            contents = driver.find_elements(By.CSS_SELECTOR, "#contents > ytd-rich-item-renderer")[
+                _from:
+            ]
             html.send_keys(Keys.PAGE_DOWN)
 
             for content in contents:
@@ -81,9 +77,9 @@ class HashTagStrategy(ScrapeStrategy):
 
         video_url = thumbnail.get_attribute("href")
         video_id = video_url.split("/")[-1]
-        thumbnail_url = thumbnail.find_element(
-            By.CSS_SELECTOR, "yt-image > img"
-        ).get_attribute("src")
+        thumbnail_url = thumbnail.find_element(By.CSS_SELECTOR, "yt-image > img").get_attribute(
+            "src"
+        )
         if not thumbnail_url:
             thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/hq2.jpg"
 
@@ -92,9 +88,7 @@ class HashTagStrategy(ScrapeStrategy):
 
         title = meta.find_element(By.ID, "video-title")
         channel = meta.find_element(By.CSS_SELECTOR, "#channel-name #text > a")
-        view_count = meta.find_element(
-            By.CSS_SELECTOR, "#metadata-line > span:nth-child(3)"
-        )
+        view_count = meta.find_element(By.CSS_SELECTOR, "#metadata-line > span:nth-child(3)")
         date = meta.find_element(By.CSS_SELECTOR, "#metadata-line > span:nth-child(4)")
 
         return {
@@ -141,3 +135,37 @@ class HashTagStrategy(ScrapeStrategy):
         except ValueError:
             # 변환할 수 없는 경우에는 0을 반환합니다.
             return 0
+
+
+class NamuWikiStrategy(ScrapeStrategy):
+    """나무위키 스크래핑 전략을 정의하는 클래스입니다."""
+
+    @classmethod
+    @override
+    def _run(cls, driver: Chrome, idx: int) -> list[dict]:
+
+        # [ ] TODO  나무위키 스크래핑 구현
+        _from, _to = idx, idx + 36  # YouTube loads 36 contents at once
+        parsed_contents = []
+
+        while _from < _to:
+            contents = driver.find_elements(By.PARTIAL_LINK_TEXT, "namu.wiki")[_from:]
+
+            for content in contents:
+                parsed_contents.append(cls._scrape_content(content))
+            _from += len(contents)
+
+        return parsed_contents
+
+    @classmethod
+    @override
+    def _scrape_content(cls, content: WebElement) -> dict:
+        # [ ] TODO  나무위키 스크래핑 구현
+        link = content.find_element(By.CSS_SELECTOR, "a")
+        return {"link": link}
+
+    @classmethod
+    @override
+    def _filter(cls, content: dict) -> bool:
+        """콘텐츠를 필터링합니다."""
+        return True

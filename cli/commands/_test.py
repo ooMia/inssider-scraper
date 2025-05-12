@@ -4,10 +4,7 @@ import subprocess
 def run_tests(all_tests=False):
     """단위 테스트를 실행합니다"""
     try:
-        pattern = "*test_*.py" if all_tests else "test_*.py"
-        subprocess.run(
-            ["python3", "-m", "unittest", "discover", "-p", pattern], check=True
-        )
+        subprocess.run(["pytest", "--sw"], check=True)
     except KeyboardInterrupt:
         pass
 

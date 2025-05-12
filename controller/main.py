@@ -1,3 +1,13 @@
+from fastapi import FastAPI
+
+from model.controller import (
+    HashTagCrawlRequest,
+    HashTagCrawlResponse,
+    VideoCreateRequest,
+    VideoCreateResponse,
+)
+
+
 def _project_version() -> str:
     import tomllib
     from pathlib import Path
@@ -11,8 +21,6 @@ def _project_version() -> str:
         return "0.0.1"
 
 
-from fastapi import FastAPI
-
 app = FastAPI(
     title="Inssider Crawler",
     description="인사이더 데이터 크롤링 및 조회 API",
@@ -25,9 +33,6 @@ app = FastAPI(
 )
 
 
-from model.controller import VideoCreateRequest, VideoCreateResponse
-
-
 @app.post("/api/v1/videos")
 async def create_video(req: VideoCreateRequest) -> VideoCreateResponse:
     from service.video_service import VideoService
@@ -36,9 +41,6 @@ async def create_video(req: VideoCreateRequest) -> VideoCreateResponse:
     data = service.create_video()
 
     return VideoCreateResponse.from_dict(data)
-
-
-from model.controller import HashTagCrawlRequest, HashTagCrawlResponse
 
 
 @app.post("/api/v1/crawl/hashtag")

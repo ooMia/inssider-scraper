@@ -3,14 +3,15 @@ import os
 from urllib.request import Request
 from warnings import filterwarnings
 
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+from service.youtube.strategy import ScrapeStrategy
+
 filterwarnings("ignore", "", DeprecationWarning, "seleniumwire")
 filterwarnings("ignore", "", DeprecationWarning, "OpenSSL.crypto", 1679)
 
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from seleniumwire import webdriver
-
-from service.youtube.strategy import ScrapeStrategy
+from seleniumwire import webdriver  # noqa: E402
 
 
 class DefaultCrawler(abc.ABC):
@@ -65,6 +66,22 @@ class YouTubeCrawler(DefaultCrawler):
         self.host = "www.youtube.com"
         self.headers["headers"]["Host"] = self.host
         self.headers["headers"]["Referer"] = f"https://{self.host}/"
+
+    def scrape(self, url: str, strategy: ScrapeStrategy, limit: int = 10) -> dict:
+        self.driver.get(url)
+        # self.driver.implicitly_wait(10)
+        return strategy.run(self.driver, limit)
+
+
+class NamuWikiCrawler(DefaultCrawler):
+    """NamuWiki 크롤러입니다."""
+
+    def __init__(self):
+        """요청 헤더를 초기화합니다."""
+        self.host = "namu.wiki"
+        self.headers["headers"]["Host"] = self.host
+        self.headers["headers"]["Referer"] = f"https://{self.host}/"
+        # TODO invalid browser 문제 해결 
 
     def scrape(self, url: str, strategy: ScrapeStrategy, limit: int = 10) -> dict:
         self.driver.get(url)
