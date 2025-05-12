@@ -1,4 +1,8 @@
+from datetime import timedelta
+from zoneinfo import ZoneInfo
+
 import pytest
+from sqlalchemy import text
 
 from model.repository import User
 from repository.handler import DatabaseManager
@@ -32,10 +36,12 @@ def test_create_user(sample_users: list[User]):
         assert user.password_salt == "salt1"
         assert user.details is None
         assert user.following == []
-        assert user.created_at is not None
-        assert user.updated_at is not None
-        assert user.created_at == user.updated_at
-        print(user.created_at, user.updated_at)
+
+        # check if record is created within the last 5 seconds
+        current_time = session.execute(text("SELECT NOW()")).scalar()
+        user_created_at = user.created_at.replace(tzinfo=ZoneInfo("UTC"))
+        tolerance = timedelta(seconds=5)
+        assert (current_time - tolerance) <= user_created_at
 
 
 def test_create_multiple_users(sample_users: list[User]):
