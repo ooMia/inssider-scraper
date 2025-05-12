@@ -25,5 +25,6 @@ Conventions
 from .user import User  # noqa: F401
 from .user import UserDetail, Follow  # noqa: F401
 from .post import Post  # noqa: F401
+from .post import Category  # noqa: F401
 
 from .video import Video  # noqa: F401
