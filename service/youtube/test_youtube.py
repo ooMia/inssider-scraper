@@ -19,9 +19,7 @@ class TestHashTagStrategy(unittest.TestCase):
         # 각 테스트 케이스에 대해 검증
         for view_count_str, expected_count in test_cases:
             with self.subTest(view_count_str=view_count_str):
-                self.assertEqual(
-                    HashTagStrategy._parse_view_count(view_count_str), expected_count
-                )
+                self.assertEqual(HashTagStrategy._parse_view_count(view_count_str), expected_count)
 
 
 if __name__ == "__main__":
