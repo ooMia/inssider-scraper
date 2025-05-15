@@ -8,10 +8,10 @@ if TYPE_CHECKING:
 from sqlalchemy import BigInteger, Boolean, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
-from model.repository._base import Base, TimestampMixin, users_id_fk
+from model.repository._base import Base, SoftDeleteTimestampMixin, users_id_fk
 
 
-class Like(MappedAsDataclass, Base, TimestampMixin):
+class Like(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "likes"
     from enum import Enum
 
@@ -45,7 +45,7 @@ class Like(MappedAsDataclass, Base, TimestampMixin):
     )
 
 
-class Follow(MappedAsDataclass, Base, TimestampMixin):
+class Follow(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "follows"
 
     from_user_id: Mapped[int] = mapped_column(
@@ -56,7 +56,7 @@ class Follow(MappedAsDataclass, Base, TimestampMixin):
     )
 
 
-class UserDetail(MappedAsDataclass, Base, TimestampMixin):
+class UserDetail(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "user_details"
 
     # 1. PK (user_id, init=False)
@@ -89,7 +89,7 @@ class UserDetail(MappedAsDataclass, Base, TimestampMixin):
     follower_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 공개 여부")
 
 
-class User(MappedAsDataclass, Base, TimestampMixin):
+class User(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "users"
 
     # 1. PK (init=False)

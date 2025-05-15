@@ -6,10 +6,10 @@ if TYPE_CHECKING:
 from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
-from model.repository._base import Base, TimestampMixin
+from model.repository._base import Base, SoftDeleteTimestampMixin
 
 
-class Post(MappedAsDataclass, Base, TimestampMixin):
+class Post(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "posts"
 
     # 1. PK
@@ -116,7 +116,7 @@ class PostTag(MappedAsDataclass, Base):
     )
 
 
-class Tag(MappedAsDataclass, Base, TimestampMixin):
+class Tag(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, doc="태그 PK")
@@ -125,7 +125,7 @@ class Tag(MappedAsDataclass, Base, TimestampMixin):
     posts: Mapped[list["Post"]] = relationship("Post", secondary="post_tags", back_populates="tags")
 
 
-class Comment(MappedAsDataclass, Base, TimestampMixin):
+class Comment(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "comments"
 
     # 1. PK

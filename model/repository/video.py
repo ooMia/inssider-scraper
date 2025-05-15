@@ -3,10 +3,10 @@ from datetime import datetime
 from sqlalchemy import DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
-from model.repository._base import Base, TimestampMixin
+from model.repository._base import Base, SoftDeleteTimestampMixin
 
 
-class Video(MappedAsDataclass, Base, TimestampMixin):
+class Video(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "videos"
 
     id: Mapped[str] = mapped_column(String(20), primary_key=True, doc="유튜브 영상 ID")
