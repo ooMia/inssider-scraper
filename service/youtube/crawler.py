@@ -81,7 +81,7 @@ class NamuWikiCrawler(DefaultCrawler):
         self.host = "namu.wiki"
         self.headers["headers"]["Host"] = self.host
         self.headers["headers"]["Referer"] = f"https://{self.host}/"
-        # TODO invalid browser 문제 해결 
+        # TODO invalid browser 문제 해결
 
     def scrape(self, url: str, strategy: ScrapeStrategy, limit: int = 10) -> dict:
         self.driver.get(url)

@@ -21,12 +21,13 @@ class HashTagService:
         from service.youtube.strategy import NamuWikiStrategy
 
         with NamuWikiCrawler() as crawler:
-            url = "https://namu.wiki/w/%EB%B0%88(%EC%9D%B8%ED%84%B0%EB%84%B7%20%EC%9A%A9%EC%96%B4)#s-6.1"
+            url = "https://namu.wiki/w/%EB%B0%88(%EC%9D%B8%ED%84%B0%EB%84%B7%20%EC%9A%A9%EC%96%B4)"
             data = crawler.scrape(url, NamuWikiStrategy())
 
             # [ ] TODO db 저장
 
             return data
+
 
 if __name__ == "__main__":
     res = HashTagService().crawl_namuwiki()
