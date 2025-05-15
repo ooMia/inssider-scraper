@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from model.repository import Post
 
-from sqlalchemy import BigInteger, Boolean, String, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from model.repository._base import Base, TimestampMixin, users_id_fk
@@ -19,15 +19,25 @@ class Like(MappedAsDataclass, Base, TimestampMixin):
         POST = "post"
         COMMENT = "comment"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
-        BigInteger,
-        users_id_fk(),
-        nullable=False,
-    )
-    target_type: Mapped[LikeTargetType] = mapped_column(String(50), nullable=False)
-    target_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    # 1. PK (init=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, init=False)
+    user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), nullable=False, init=False)
 
+    # 2. 필수값 (init=True, 디폴트 없음)
+    target_type: Mapped[LikeTargetType] = mapped_column(String(50), nullable=False, init=True)
+    target_id: Mapped[int] = mapped_column(BigInteger, nullable=False, init=True)
+
+    # 3. 관계 (init=True, default=None)
+    user: Mapped["User"] = relationship(
+        "User",
+        back_populates="likes",
+        init=True,
+        default=None,
+        uselist=False,
+        info={"doc": "Like를 누른 사용자"},
+    )
+
+    # 4. 제약조건
     from sqlalchemy import UniqueConstraint
 
     __table_args__ = (
@@ -56,7 +66,7 @@ class UserDetail(MappedAsDataclass, Base, TimestampMixin):
 
     # 2. 선택값 (default=None)
     introduction: Mapped[str | None] = mapped_column(
-        String(255), nullable=True, doc="자기소개", default=None
+        Text, nullable=True, doc="자기소개", default=None
     )
     profile_url: Mapped[str | None] = mapped_column(
         String(255), nullable=True, doc="프로필 URL", default=None
@@ -71,6 +81,7 @@ class UserDetail(MappedAsDataclass, Base, TimestampMixin):
         back_populates="details",
         init=True,
         default=None,
+        uselist=False,
     )
 
     # 4. 옵션 (default=True)

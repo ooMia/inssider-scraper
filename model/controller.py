@@ -55,3 +55,17 @@ class HashTagCrawlResponse(BaseModel):
             contents=[cls.SearchResult(**item) for item in data.get("contents", [])],
             length=data.get("length", len(data.get("contents", []))),
         )
+
+
+"""
+    LoginRequest,
+    LoginResponse,
+    LogoutRequest,
+    LogoutResponse,
+    RegisterRequest,
+    RegisterResponse,
+    FindIdRequest,
+    FindIdResponse,
+    FindPasswordRequest,
+    FindPasswordResponse,
+"""

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from model.repository import User
 
-from sqlalchemy import BigInteger, ForeignKey, String, Text
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from model.repository._base import Base, TimestampMixin
@@ -21,6 +21,9 @@ class Post(MappedAsDataclass, Base, TimestampMixin):
     title: Mapped[str] = mapped_column(String(255), nullable=False, doc="게시글 제목")
     content: Mapped[str] = mapped_column(Text, nullable=False, doc="게시글 내용")
     media_url: Mapped[str] = mapped_column(String(255), nullable=False, doc="게시글 미디어 URL")
+    media_upload_time: Mapped[str] = mapped_column(
+        DateTime, nullable=False, doc="미디어 업로드 시점"
+    )
 
     # 3. 관계 필드 (init=True)
     user: Mapped["User"] = relationship(
@@ -34,6 +37,7 @@ class Post(MappedAsDataclass, Base, TimestampMixin):
         back_populates="posts",
         doc="게시글이 속한 카테고리",
         init=True,
+        uselist=False,
     )
 
     # 4. 외래키 (init=False)
@@ -171,3 +175,10 @@ class Comment(MappedAsDataclass, Base, TimestampMixin):
         default_factory=list,
         doc="대댓글 목록",
     )
+
+
+# users : detail one-to-one
+# introduction : text
+# category: post one-to-one
+# upload_시간: 해당 미디어가 업로드 된 시점
+# 회원가입 규정에 따라 삭제 대신 일정 기간 보관

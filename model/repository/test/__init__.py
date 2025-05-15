@@ -51,6 +51,7 @@ def _intern_create_posts(session: Session, users, categories):
             title=f"[{root_category.name}({root_category.id})] 카테고리 관련 글",
             content=f"이 글은 [{category.name}({category.id})] 카테고리에 속합니다.",
             media_url="https://picsum.photos/200",
+            media_upload_time="2023-10-01 12:00:00",
             user=users[idx % len(users)],
             category=category,
         )

@@ -1,6 +1,6 @@
 import pytest
 
-from model.repository import Category, Post
+from model.repository import Post
 from repository.handler import DatabaseManager
 
 
