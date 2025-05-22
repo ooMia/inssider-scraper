@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 from sqlalchemy import BigInteger, Boolean, String, Text
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
-from model.repository._base import Base, SoftDeleteTimestampMixin, users_id_fk
+from model.repository._base import Base, SoftDeleteTimestampMixin, accounts_id_fk
 
 
 class Like(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
@@ -21,15 +21,17 @@ class Like(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
 
     # 1. PK (init=False)
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, init=False)
-    user_id: Mapped[int] = mapped_column(BigInteger, users_id_fk(), nullable=False, init=False)
+    account_id: Mapped[int] = mapped_column(
+        BigInteger, accounts_id_fk(), nullable=False, init=False
+    )
 
     # 2. 필수값 (init=True, 디폴트 없음)
     target_type: Mapped[LikeTargetType] = mapped_column(String(50), nullable=False, init=True)
     target_id: Mapped[int] = mapped_column(BigInteger, nullable=False, init=True)
 
     # 3. 관계 (init=True, default=None)
-    user: Mapped["User"] = relationship(
-        "User",
+    account: Mapped["Account"] = relationship(
+        "Account",
         back_populates="likes",
         init=True,
         default=None,
@@ -41,27 +43,27 @@ class Like(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     from sqlalchemy import UniqueConstraint
 
     __table_args__ = (
-        UniqueConstraint("user_id", "target_type", "target_id", name="uq_like_user_target"),
+        UniqueConstraint("account_id", "target_type", "target_id", name="uq_like_account_target"),
     )
 
 
 class Follow(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     __tablename__ = "follows"
 
-    from_user_id: Mapped[int] = mapped_column(
-        BigInteger, users_id_fk(), primary_key=True, doc="팔로우를 요청한 사용자 ID"
+    from_account_id: Mapped[int] = mapped_column(
+        BigInteger, accounts_id_fk(), primary_key=True, doc="팔로우를 요청한 사용자 ID"
     )
-    to_user_id: Mapped[int] = mapped_column(
-        BigInteger, users_id_fk(), primary_key=True, doc="팔로우 요청 대상의 사용자 ID"
+    to_account_id: Mapped[int] = mapped_column(
+        BigInteger, accounts_id_fk(), primary_key=True, doc="팔로우 요청 대상의 사용자 ID"
     )
 
 
-class UserDetail(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
-    __tablename__ = "user_details"
+class Profile(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
+    __tablename__ = "profiles"
 
-    # 1. PK (user_id, init=False)
-    user_id: Mapped[int] = mapped_column(
-        BigInteger, users_id_fk(), primary_key=True, doc="users 테이블 PK", init=False
+    # 1. PK (account_id, init=False)
+    account_id: Mapped[int] = mapped_column(
+        BigInteger, accounts_id_fk(), primary_key=True, doc="accounts 테이블 PK", init=False
     )
 
     # 2. 선택값 (default=None)
@@ -71,13 +73,13 @@ class UserDetail(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     profile_url: Mapped[str | None] = mapped_column(
         String(255), nullable=True, doc="프로필 URL", default=None
     )
-    username: Mapped[str | None] = mapped_column(
+    nickname: Mapped[str | None] = mapped_column(
         String(255), nullable=True, doc="사용자 이름", default=None
     )
 
     # 3. 관계 (init=True, default=None)
-    user: Mapped["User"] = relationship(
-        "User",
+    account: Mapped["Account"] = relationship(
+        "Account",
         back_populates="details",
         init=True,
         default=None,
@@ -89,8 +91,8 @@ class UserDetail(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     follower_visibility: Mapped[bool] = mapped_column(Boolean, default=True, doc="팔로워 공개 여부")
 
 
-class User(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
-    __tablename__ = "users"
+class Account(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
+    __tablename__ = "accounts"
 
     # 1. PK (init=False)
     id: Mapped[int] = mapped_column(
@@ -102,41 +104,60 @@ class User(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
 
     # 2. 필수값 (init=True, 디폴트 없음)
     email: Mapped[str] = mapped_column(String(255), unique=True, doc="이메일 주소")
-    password: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱값")
-    password_salt: Mapped[str] = mapped_column(String(255), doc="비밀번호 해싱용 salt")
 
-    # 3. 관계 필드 (init=False, 객체지향적 사용)
-    details: Mapped["UserDetail"] = relationship(
-        "UserDetail",
-        back_populates="user",
+    password: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, doc="비밀번호 해싱값 (이메일 인증 시)"
+    )
+    password_salt: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, doc="비밀번호 해싱용 salt (이메일 인증 시)"
+    )
+
+    # 3. 필수 값 (init=False, 디폴트 있음)
+    account_type: Mapped[str] = mapped_column(
+        String(50), default="email", doc="계정 유형 (email, google, facebook 등)"
+    )
+    role: Mapped[str] = mapped_column(String(50), default="user", doc="사용자 권한")
+
+    # 소셜 로그인 사용자의 경우, 해당 프로바이더에서 제공하는 고유 ID
+    provider_user_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        default=None,
+        doc="OAuth 공급자의 사용자 고유 ID (소셜 로그인 시)",
+    )
+
+    # 4. 관계 필드 (init=False, 객체지향적 사용)
+    details: Mapped["Profile"] = relationship(
+        "Profile",
+        back_populates="account",
         cascade="all, delete-orphan",
         uselist=False,
         init=False,
-        info={"doc": "User와 UserDetail의 1:1 관계"},
+        info={"doc": "Account와 Profile의 1:1 관계"},
     )
 
     following: Mapped[list["Follow"]] = relationship(
-        "User",
+        "Account",
         secondary="follows",
-        primaryjoin=id == Follow.from_user_id,
-        secondaryjoin=id == Follow.to_user_id,
+        primaryjoin=id == Follow.from_account_id,
+        secondaryjoin=id == Follow.to_account_id,
         backref="followers",
         init=False,
-        info={"doc": "User가 팔로우하는 User 목록"},
+        info={"doc": "Account가 팔로우하는 Account 목록"},
     )
 
     posts: Mapped[list["Post"]] = relationship(
         "Post",
-        back_populates="user",
+        back_populates="account",
         cascade="all, delete-orphan",
         init=False,
-        info={"doc": "User와 Post 간의 1:N 관계"},
+        info={"doc": "Account와 Post 간의 1:N 관계"},
     )
 
     likes: Mapped[list["Like"]] = relationship(
         "Like",
-        back_populates="user",
+        back_populates="account",
         cascade="all, delete-orphan",
         init=False,
-        info={"doc": "User가 좋아요를 누른 Post 목록"},
+        info={"doc": "Account가 좋아요를 누른 Post 목록"},
     )

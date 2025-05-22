@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from model.repository import User
+    from model.repository import Account
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from model.repository._base import Base, SoftDeleteTimestampMixin
@@ -26,8 +26,8 @@ class Post(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     )
 
     # 3. 관계 필드 (init=True)
-    user: Mapped["User"] = relationship(
-        "User",
+    account: Mapped["Account"] = relationship(
+        "Account",
         back_populates="posts",
         doc="작성자 객체",
         init=True,
@@ -41,9 +41,9 @@ class Post(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     )
 
     # 4. 외래키 (init=False)
-    user_id: Mapped[int] = mapped_column(
+    account_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("users.id", ondelete="SET NULL"),
+        ForeignKey("accounts.id", ondelete="SET NULL"),
         index=True,
         nullable=True,
         doc="작성자 ID",
@@ -116,13 +116,17 @@ class PostTag(MappedAsDataclass, Base):
     )
 
 
-class Tag(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
+class Tag(MappedAsDataclass, Base):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, doc="태그 PK")
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, doc="태그 이름")
 
     posts: Mapped[list["Post"]] = relationship("Post", secondary="post_tags", back_populates="tags")
+
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime, insert_default=func.now(), doc="생성 시간"
+    )
 
 
 class Comment(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
@@ -145,9 +149,9 @@ class Comment(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
         doc="게시글 ID",
         init=False,
     )
-    user_id: Mapped[int] = mapped_column(
+    account_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("users.id", ondelete="SET NULL"),
+        ForeignKey("accounts.id", ondelete="SET NULL"),
         index=True,
         nullable=True,
         doc="작성자 ID",
@@ -177,7 +181,7 @@ class Comment(MappedAsDataclass, Base, SoftDeleteTimestampMixin):
     )
 
 
-# users : detail one-to-one
+# accounts : detail one-to-one
 # introduction : text
 # category: post one-to-one
 # upload_시간: 해당 미디어가 업로드 된 시점

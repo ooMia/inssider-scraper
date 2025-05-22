@@ -35,8 +35,8 @@ def test_create_table(db_engine):
 
     print("Table names:", table_names)
 
-    assert "users" in table_names
-    assert "user_details" in table_names
+    assert "accounts" in table_names
+    assert "profiles" in table_names
     assert "follows" in table_names
     assert "posts" in table_names
     assert "videos" in table_names

@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 import pytest
 from sqlalchemy import text
 
-from model.repository import User
+from model.repository import Account
 from repository.handler import DatabaseManager
 
 
@@ -15,90 +15,90 @@ def reset_db():
 
 
 @pytest.fixture
-def sample_users():
+def sample_accounts():
     return [
-        User(email="user1@test.com", password="pw1", password_salt="salt1"),
-        User(email="user2@test.com", password="pw2", password_salt="salt2"),
-        User(email="user3@test.com", password="pw3", password_salt="salt3"),
+        Account(email="account1@test.com", password="pw1", password_salt="salt1"),
+        Account(email="account2@test.com", password="pw2", password_salt="salt2"),
+        Account(email="account3@test.com", password="pw3", password_salt="salt3"),
     ]
 
 
-def test_create_user(sample_users: list[User]):
+def test_create_account(sample_accounts: list[Account]):
     with DatabaseManager() as session:
-        session.add(sample_users[0])
+        session.add(sample_accounts[0])
         session.commit()
 
-        user = session.query(User).first()
-        assert user is not None
-        assert user.id == 1
-        assert user.email == "user1@test.com"
-        assert user.password == "pw1"
-        assert user.password_salt == "salt1"
-        assert user.details is None
-        assert user.following == []
+        account = session.query(Account).first()
+        assert account is not None
+        assert account.id == 1
+        assert account.email == "account1@test.com"
+        assert account.password == "pw1"
+        assert account.password_salt == "salt1"
+        assert account.details is None
+        assert account.following == []
 
         # check if record is created within the last 5 seconds
         current_time = session.execute(text("SELECT NOW()")).scalar()
-        user_created_at = user.created_at.replace(tzinfo=ZoneInfo("UTC"))
+        account_created_at = account.created_at.replace(tzinfo=ZoneInfo("UTC"))
         tolerance = timedelta(seconds=5)
-        assert (current_time - tolerance) <= user_created_at
+        assert (current_time - tolerance) <= account_created_at
 
 
-def test_create_multiple_users(sample_users: list[User]):
+def test_create_multiple_accounts(sample_accounts: list[Account]):
     with DatabaseManager() as session:
-        session.add_all(sample_users)
+        session.add_all(sample_accounts)
         session.commit()
 
-        users = session.query(User).all()
-        assert len(users) == 3
+        accounts = session.query(Account).all()
+        assert len(accounts) == 3
 
 
-def test_update_user_password(sample_users: list[User]):
+def test_update_account_password(sample_accounts: list[Account]):
     with DatabaseManager() as session:
-        user = sample_users[0]
-        session.add(user)
+        account = sample_accounts[0]
+        session.add(account)
         session.commit()
 
-        user.email = "update@test.com"
-        user.password = "newpw"
-        user.password_salt = "newsalt"
+        account.email = "update@test.com"
+        account.password = "newpw"
+        account.password_salt = "newsalt"
         session.commit()
 
-        updated = session.query(User).filter_by(email="update@test.com").first()
+        updated = session.query(Account).filter_by(email="update@test.com").first()
         assert updated is not None
-        assert updated.id == user.id
+        assert updated.id == account.id
         assert updated.email == "update@test.com"
         assert updated.password == "newpw"
         assert updated.password_salt == "newsalt"
 
 
-def test_delete_user(sample_users: list[User]):
+def test_delete_account(sample_accounts: list[Account]):
     with DatabaseManager() as session:
-        user = sample_users[0]
-        session.add(user)
+        account = sample_accounts[0]
+        session.add(account)
         session.commit()
 
-        session.delete(user)
+        session.delete(account)
         session.commit()
 
-        deleted = session.query(User).first()
+        deleted = session.query(Account).first()
         assert deleted is None
 
 
-def test_error_duplicated_email(sample_users: list[User]):
+def test_error_duplicated_email(sample_accounts: list[Account]):
     from psycopg.errors import UniqueViolation
     from sqlalchemy.exc import IntegrityError
 
     with pytest.raises(IntegrityError) as exc_info:
         with DatabaseManager() as session:
-            user1 = sample_users[0]
-            session.add(user1)
+            account1 = sample_accounts[0]
+            session.add(account1)
             session.commit()
 
-            # Error occurs when trying to add a user with the same email
-            user2 = sample_users[1]
-            user2.email = user1.email
-            session.add(user2)
+            # Error occurs when trying to add a account with the same email
+            account2 = sample_accounts[1]
+            account2.email = account1.email
+            session.add(account2)
             session.commit()
 
     assert isinstance(exc_info.value.orig, UniqueViolation)
@@ -111,11 +111,11 @@ def test_error_long_email():
     with pytest.raises(DataError) as exc_info:
         with DatabaseManager() as session:
             long_email = "a" * 255 + "@test.com"
-            user = User(email=long_email, password="pw", password_salt="salt")
-            session.add(user)
+            account = Account(email=long_email, password="pw", password_salt="salt")
+            session.add(account)
             session.commit()
 
-            fetched = session.query(User).first()
+            fetched = session.query(Account).first()
             assert fetched is not None
             assert fetched.email == long_email
 

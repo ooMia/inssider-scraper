@@ -23,4 +23,4 @@ inssider serve
 
 # ToDo
 
-- [ ] Upload user profile to AWS S3
+- [ ] Upload profile to AWS S3
